@@ -167,15 +167,13 @@ namespace jaguar_base{
         long unsigned int sz = wrapper.gps_data_queue_.size();
         if(sz > 0){
           gps_status = sensor_msgs::NavSatFix();
-          gps_status.status = sensor_msgs::NavSatStatus();
           gps_status.header.stamp = ros::Time::now();
           gps_status.header.frame_id = string("base_link");
           gps_status.status.status = wrapper.gps_data_queue_[sz-1].gpsStatus;
           gps_status.latitude = wrapper.gps_data_queue_[sz-1].latitude;
           gps_status.longitude = wrapper.gps_data_queue_[sz-1].longitude;
           gps_publisher_.publish(gps_status);
-        } 
-
+        }
       }
       if(status){
         long unsigned int sz = wrapper.status_data_queue_.size();
