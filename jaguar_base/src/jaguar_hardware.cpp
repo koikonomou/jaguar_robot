@@ -42,7 +42,7 @@ namespace jaguar_base{
     wrapper = drrobot_wrapper::DrRobotWrapper(robotID_, robotType_, robotCommMethod_, robotIP_, commPortNum_, robotSerialPort_,
                                                 encoderOneCircleCnt_, message_queue_, use_IMU_, use_GPS_, use_motors_, use_status_, battery_packs_);
 
-    gps_publisher_ = nh.advertise<jaguar_msgs::gps_msg>("gps_Status", 10);
+    gps_publisher_ = nh.advertise<sensor_msgs::NavSatFix>("gps_status", 10);
     status_publisher_ = nh_.advertise<jaguar_msgs::JaguarStatus>("jaguar_status", 10);
 
     resetTravelOffset();
@@ -166,18 +166,14 @@ namespace jaguar_base{
       if(gps){
         long unsigned int sz = wrapper.gps_data_queue_.size();
         if(sz > 0){
-          gps_Status = jaguar_msgs::gps_msg();
-          gps_Status.header.stamp = ros::Time::now();
-          gps_Status.header.frame_id = string("jaguar_GPS");
-
-          gps_Status.time = wrapper.gps_data_queue_[sz-1].timeStamp;
-          gps_Status.date = wrapper.gps_data_queue_[sz-1].dateStamp;
-          gps_Status.status = wrapper.gps_data_queue_[sz-1].gpsStatus;
-          gps_Status.latitude = wrapper.gps_data_queue_[sz-1].latitude;
-          gps_Status.longitude = wrapper.gps_data_queue_[sz-1].longitude;
-          gps_Status.vog = wrapper.gps_data_queue_[sz-1].vog;
-          gps_Status.cog = wrapper.gps_data_queue_[sz-1].cog;
-          gps_publisher_.publish(gps_Status);
+          gps_status = sensor_msgs::NavSatFix();
+          gps_status.status = sensor_msgs::NavSatStatus();
+          gps_status.header.stamp = ros::Time::now();
+          gps_status.header.frame_id = string("base_link");
+          gps_status.status.status = wrapper.gps_data_queue_[sz-1].gpsStatus;
+          gps_status.latitude = wrapper.gps_data_queue_[sz-1].latitude;
+          gps_status.longitude = wrapper.gps_data_queue_[sz-1].longitude;
+          gps_publisher_.publish(gps_status);
         } 
 
       }
